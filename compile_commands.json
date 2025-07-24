@@ -1,0 +1,18 @@
+[
+  {
+    "arguments": [
+      "/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-I./include",
+      "-c",
+      "-o",
+      "src/game.o",
+      "src/game.c"
+    ],
+    "directory": "/home/luis/Documentos/SDL/first_game",
+    "file": "/home/luis/Documentos/SDL/first_game/src/game.c",
+    "output": "/home/luis/Documentos/SDL/first_game/src/game.o"
+  }
+]
