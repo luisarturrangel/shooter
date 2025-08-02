@@ -2,6 +2,7 @@
 #define GAME_H_
 
 #include "enemy.h"
+#include "player.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
@@ -17,24 +18,12 @@
 #include <SDL3/SDL_video.h>
 #include <stdbool.h>
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
+#define SCREEN_WIDTH 768
+#define SCREEN_HEIGHT 1152
 #define FPS 60
 
 #define MAX_BULLETS 10
 #define MAX_ENEMIES 20
-
-typedef struct {
-  SDL_FRect rect;
-  float speed;
-  float cooldown_timer;
-} Player;
-
-typedef struct {
-  SDL_FRect rect;
-  float speed;
-  bool active;
-} Bullet;
 
 typedef struct {
   SDL_Window *window;
