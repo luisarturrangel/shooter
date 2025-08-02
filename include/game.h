@@ -1,6 +1,7 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+#include "enemy.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
@@ -21,17 +22,13 @@
 #define FPS 60
 
 #define MAX_BULLETS 10
+#define MAX_ENEMIES 20
 
 typedef struct {
   SDL_FRect rect;
   float speed;
   float cooldown_timer;
 } Player;
-
-typedef struct {
-  SDL_FRect rect;
-  bool alive;
-} Enemy;
 
 typedef struct {
   SDL_FRect rect;
@@ -47,7 +44,8 @@ typedef struct {
   Uint64 last_frame_time;
   Player player;
   Bullet bullets[MAX_BULLETS];
-  Enemy enemy;
+  Enemy enemy[MAX_ENEMIES];
+  int alive_enemies_count;
 } Game;
 
 /**
@@ -75,6 +73,12 @@ void game_update(Game *game, float delta_time);
  * @param game Pointer to Game structure
  */
 void game_render(Game *game);
+
+/**
+ * @brief Clean up entities not used
+ * @param game Pointer to Game structure
+ */
+void game_cleanup_entities(Game *game);
 
 /**
  * @brief Cleans up resources and shuts down SDL subsystems

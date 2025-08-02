@@ -15,6 +15,7 @@ int main() {
     game.last_frame_time = current_time;
 
     game_update(&game, delta_time);
+    game_cleanup_entities(&game);
     game_render(&game);
 
     Uint64 frame_time = SDL_GetTicks() - current_time;

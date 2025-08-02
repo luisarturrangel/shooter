@@ -33,11 +33,10 @@ int game_init(Game *game) {
   }
 
   // Enemy
-  game->enemy.rect.x = (SCREEN_WIDTH - game->enemy.rect.w) / 2.0f;
-  game->enemy.rect.y = (SCREEN_HEIGHT - game->enemy.rect.h) / 3.0f;
-  game->enemy.rect.w = 100;
-  game->enemy.rect.h = 100;
-  game->enemy.alive = true;
+  game->alive_enemies_count = 0;
+  int enemy_count = 5;
+  enemy_spawn(game->enemy, enemy_count, MAX_ENEMIES,
+              &game->alive_enemies_count);
 
   return 0;
 }
@@ -118,19 +117,6 @@ void game_update(Game *game, float delta_time) {
     game->player.rect.y = SCREEN_HEIGHT - game->player.rect.h;
   }
 
-  if (game->enemy.rect.x < 0) {
-    game->enemy.rect.x = 0;
-  }
-  if (game->enemy.rect.x + game->enemy.rect.w > SCREEN_WIDTH) {
-    game->enemy.rect.x = SCREEN_WIDTH - game->enemy.rect.w;
-  }
-  if (game->enemy.rect.y < 0) {
-    game->enemy.rect.y = 0;
-  }
-  if (game->enemy.rect.y + game->enemy.rect.h > SCREEN_HEIGHT) {
-    game->enemy.rect.y = SCREEN_HEIGHT - game->enemy.rect.h;
-  }
-
   // timer reset
   if (game->player.cooldown_timer > 0) {
     game->player.cooldown_timer -= delta_time;
@@ -153,12 +139,17 @@ void game_update(Game *game, float delta_time) {
         game->bullets[i].active = false;
       }
 
-      // is enemy alive
-      if (SDL_HasRectIntersectionFloat(&game->bullets[i].rect,
-                                       &game->enemy.rect)) {
-        SDL_Log("Enemy hit");
-        game->enemy.alive = false;
+      for (int j = 0; j < MAX_ENEMIES; j++) {
+        if (game->enemy[j].alive) {
+          if (SDL_HasRectIntersectionFloat(&game->bullets[i].rect,
+                                           &game->enemy[j].rect)) {
+            SDL_Log("Enemy hit [%d]", j);
+            game->enemy[j].alive = false;
+            break;
+          }
+        }
       }
+      // is enemy alive
     }
   }
 }
@@ -182,12 +173,22 @@ void game_render(Game *game) {
   }
 
   // enemy
-  SDL_SetRenderDrawColor(game->renderer, 0xFF, 0x18, 0x18, 0xFF);
-  if (game->enemy.alive) {
-    SDL_RenderFillRect(game->renderer, &game->enemy.rect);
-  }
+  enemy_render(game->enemy, game->renderer, game->alive_enemies_count);
 
   SDL_RenderPresent(game->renderer);
+}
+
+void game_cleanup_entities(Game *game) {
+  int write_index = 0;
+  for (int read_index = 0; read_index < MAX_ENEMIES; read_index++) {
+    if (game->enemy[read_index].alive) {
+      if (read_index != write_index) {
+        game->enemy[write_index] = game->enemy[read_index];
+      }
+      write_index++;
+    }
+  }
+  game->alive_enemies_count = write_index;
 }
 
 void game_cleanup(Game *game) {
